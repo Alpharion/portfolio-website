@@ -2,6 +2,7 @@ import type { SiteContent } from "@/lib/types";
 import { ButtonLink } from "@/components/common/ButtonLink";
 import { Container } from "@/components/layout/Container";
 import { FadeIn, SectionTheme } from "@/components/motion";
+import { HeroVisual } from "@/components/sections/HeroVisual";
 
 export interface HeroProps {
   content: SiteContent["hero"];
@@ -28,6 +29,7 @@ export function Hero({ content }: HeroProps) {
             </ButtonLink>
           </div>
         </FadeIn>
+        <HeroVisual />
       </Container>
     </SectionTheme>
   );
