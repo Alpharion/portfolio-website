@@ -98,7 +98,11 @@ describe("POST /api/contact", () => {
     it("forwards trimmed values", async () => {
       fetchMock.mockResolvedValue(new Response("{}", { status: 200 }));
       await POST(
-        post({ name: `  ${valid.name}  `, email: ` ${valid.email} `, message: ` ${valid.message} ` }) as never,
+        post({
+          name: `  ${valid.name}  `,
+          email: ` ${valid.email} `,
+          message: ` ${valid.message} `,
+        }) as never,
       );
       const init = fetchMock.mock.calls[0][1] as RequestInit;
       expect(JSON.parse(init.body as string)).toMatchObject(valid);

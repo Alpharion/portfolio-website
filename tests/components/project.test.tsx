@@ -77,9 +77,9 @@ describe("FeaturedProjects", () => {
     const featured = getFeaturedProjects();
     render(<FeaturedProjects projects={featured} />);
     expect(screen.getAllByTestId("project-card")).toHaveLength(featured.length);
-    expect(
-      screen.getAllByRole("link").some((l) => l.getAttribute("href") === "/projects"),
-    ).toBe(true);
+    expect(screen.getAllByRole("link").some((l) => l.getAttribute("href") === "/projects")).toBe(
+      true,
+    );
   });
 });
 

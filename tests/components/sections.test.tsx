@@ -60,13 +60,17 @@ describe("AboutBlock", () => {
     const { rerender } = render(<AboutBlock content={base} />);
     expect(screen.queryByRole("img")).toBeNull();
 
-    rerender(<AboutBlock content={{ ...base, avatar: { src: "/images/avatar.svg", alt: "Me" } }} />);
+    rerender(
+      <AboutBlock content={{ ...base, avatar: { src: "/images/avatar.svg", alt: "Me" } }} />,
+    );
     expect(screen.getByRole("img", { name: "Me" })).toBeInTheDocument();
   });
 
   it("copes with empty skills and highlights", () => {
     expect(() =>
-      render(<AboutBlock content={{ heading: "H", bio: ["Only bio."], skills: [], highlights: [] }} />),
+      render(
+        <AboutBlock content={{ heading: "H", bio: ["Only bio."], skills: [], highlights: [] }} />,
+      ),
     ).not.toThrow();
     expect(screen.getByText("Only bio.")).toBeInTheDocument();
   });

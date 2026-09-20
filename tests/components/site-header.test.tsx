@@ -30,7 +30,9 @@ describe("SiteHeader", () => {
     render(<SiteHeader />);
     const home = screen
       .getAllByRole("link")
-      .find((l) => l.getAttribute("href") === "/" && l.textContent?.includes(siteContent.site.name));
+      .find(
+        (l) => l.getAttribute("href") === "/" && l.textContent?.includes(siteContent.site.name),
+      );
     expect(home).toBeDefined();
   });
 
@@ -46,7 +48,9 @@ describe("SiteHeader", () => {
   it("treats nested routes as belonging to their section", () => {
     globalThis.__TEST_PATHNAME__ = "/projects/anything";
     render(<SiteHeader />);
-    const active = screen.getAllByTestId("nav-link").filter((l) => l.classList.contains("is-active"));
+    const active = screen
+      .getAllByTestId("nav-link")
+      .filter((l) => l.classList.contains("is-active"));
     expect(active.map((l) => l.getAttribute("href"))).toEqual(["/projects"]);
   });
 
