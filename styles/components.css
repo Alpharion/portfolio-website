@@ -968,12 +968,6 @@
     list-style: none;
   }
 
-  .featured-projects__actions {
-    display: flex;
-    justify-content: center;
-    margin-top: 2.5rem;
-  }
-
   /* ========================================================================
    * Project detail
    * ====================================================================== */
@@ -1661,10 +1655,150 @@
     }
   }
 
-  /* Exactly four cards: a 2 x 2 grid reads better than 3 + 1 orphan */
-  @media (min-width: 40rem) {
-    .project-grid:has(> :nth-child(4):last-child) {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+  /* ========================================================================
+   * Featured projects carousel (home)
+   *
+   * A CSS scroll-snap scroller: 3 cards visible from 64rem, 2 on tablets, 1 plus a peek of the
+   * next on mobile. The buttons (ProjectCarousel.tsx) scroll it one card at a time; without JS
+   * it is still swipeable / scrollable.
+   * ====================================================================== */
+
+  .project-carousel {
+    --carousel-gap: 1.5rem;
+    --carousel-visible: 3;
+  }
+
+  @media (max-width: 63.99rem) {
+    .project-carousel {
+      --carousel-visible: 2;
+    }
+  }
+
+  .project-carousel__header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1.25rem 2rem;
+    margin-bottom: 2.5rem;
+  }
+
+  .project-carousel__header .section-heading {
+    margin-bottom: 0;
+  }
+
+  .project-carousel__controls {
+    display: flex;
+    gap: 0.625rem;
+  }
+
+  .project-carousel__button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    padding: 0;
+    border: 1px solid var(--color-border-strong);
+    border-radius: 999px;
+    background: rgb(from var(--color-surface-raised) r g b / 0.7);
+    color: var(--color-fg);
+    cursor: pointer;
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    transition:
+      transform var(--duration-fast) var(--ease-out),
+      border-color var(--duration-fast) var(--ease-out),
+      background-color var(--duration-fast) var(--ease-out),
+      color var(--duration-fast) var(--ease-out),
+      box-shadow var(--duration-base) var(--ease-out);
+  }
+
+  .project-carousel__button:hover:not(:disabled) {
+    border-color: var(--color-accent);
+    background: var(--color-accent-soft);
+    color: var(--color-accent);
+    box-shadow: var(--glow-accent);
+  }
+
+  .project-carousel__button:active:not(:disabled) {
+    transform: scale(0.94);
+  }
+
+  .project-carousel__button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  /*
+   * The track bleeds 1rem past the content edges (negative margin + matching padding) and has
+   * vertical padding, so card hover lift, glow and tilt are not clipped by the scroller's
+   * overflow, while the cards still line up with the page content. A mask fades the bleed away
+   * at both ends, so the next card never shows as a stray sliver beside the content edge.
+   */
+  .project-carousel__track {
+    --carousel-bleed: 1rem;
+
+    display: flex;
+    gap: var(--carousel-gap);
+    margin: -2rem calc(-1 * var(--carousel-bleed));
+    padding: 2rem var(--carousel-bleed);
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--carousel-bleed);
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent,
+      black var(--carousel-bleed),
+      black calc(100% - var(--carousel-bleed)),
+      transparent
+    );
+    mask-image: linear-gradient(
+      to right,
+      transparent,
+      black var(--carousel-bleed),
+      black calc(100% - var(--carousel-bleed)),
+      transparent
+    );
+  }
+
+  .project-carousel__track::-webkit-scrollbar {
+    display: none;
+  }
+
+  .project-carousel__track:focus-visible {
+    outline-offset: -0.5rem;
+    border-radius: var(--radius-lg);
+  }
+
+  .project-carousel__slide {
+    display: flex;
+    flex: 0 0
+      calc((100% - (var(--carousel-visible) - 1) * var(--carousel-gap)) / var(--carousel-visible));
+    min-width: 0;
+    scroll-snap-align: start;
+  }
+
+  /* slide > HoverTilt div > a.project-card: let the card fill the slide height */
+  .project-carousel__slide > *,
+  .project-carousel__slide > * > * {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  /* Mobile: one card with a peek of the next so it reads as swipeable */
+  @media (max-width: 39.99rem) {
+    .project-carousel {
+      --carousel-gap: 1rem;
+    }
+
+    .project-carousel__slide {
+      flex-basis: calc(100% - 3rem);
     }
   }
 }
