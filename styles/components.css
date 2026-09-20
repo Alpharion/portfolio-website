@@ -690,7 +690,10 @@
   .hero {
     position: relative;
     overflow: clip;
-    padding-block: clamp(4.5rem, 13vw, 9rem) clamp(3rem, 8vw, 6rem);
+    /* Tight bottom edge: the next (violet) band's blend zone is a transparent ramp, so the hero
+       may overlap half of it and the featured section starts promptly after the CTAs. */
+    padding-block: clamp(2.5rem, 6vw, 5rem) clamp(1.5rem, 3vw, 2.5rem);
+    margin-bottom: calc(var(--section-blend) * -0.5);
     text-align: center;
   }
 
@@ -2103,6 +2106,7 @@
     font-family: var(--font-mono);
     font-size: clamp(0.6875rem, 1.6vw, 0.8125rem);
     line-height: 1.5;
+    text-align: left;
     white-space: nowrap;
   }
 
