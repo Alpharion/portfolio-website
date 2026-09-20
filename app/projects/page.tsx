@@ -11,7 +11,7 @@ export default function ProjectsPage() {
 
   return (
     <div className="page">
-      <Section>
+      <Section theme="void" className="projects-intro">
         <Container>
           <header className="page__header">
             <h1 className="page__title">Projects</h1>
@@ -19,7 +19,14 @@ export default function ProjectsPage() {
               A selection of things I have built, from side projects to production work.
             </p>
           </header>
-          <h2 className="sr-only">All projects</h2>
+        </Container>
+      </Section>
+
+      <Section theme="violet" className="projects-list" aria-labelledby="projects-list-title">
+        <Container>
+          <h2 className="sr-only" id="projects-list-title">
+            All projects
+          </h2>
           <ProjectGrid projects={projects} />
         </Container>
       </Section>
