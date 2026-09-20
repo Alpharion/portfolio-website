@@ -23,7 +23,9 @@ describe("lighthouserc.json", () => {
     for (const url of collect.url) {
       const { pathname } = new URL(url);
       const isProject = pathname.startsWith("/projects/");
-      const ok = isProject ? slugs.has(pathname.replace("/projects/", "")) : staticRoutes.has(pathname);
+      const ok = isProject
+        ? slugs.has(pathname.replace("/projects/", ""))
+        : staticRoutes.has(pathname);
       expect(ok, `${pathname} must be a real route`).toBe(true);
     }
   });
