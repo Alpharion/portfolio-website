@@ -169,7 +169,7 @@ describe("data/metadata", () => {
   it("has a parseable metadataBase matching the site URL", () => {
     const base = rootMetadata.metadataBase;
     expect(base).toBeInstanceOf(URL);
-    expect(new URL(siteContent.site.url).origin).toBe(base?.origin);
+    expect((base as URL).origin).toBe(new URL(siteContent.site.url).origin);
   });
 
   it("has a title and description", () => {
