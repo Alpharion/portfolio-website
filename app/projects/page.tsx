@@ -2,7 +2,7 @@ import { routeMetadata } from "@/data/metadata";
 import { getAllProjects } from "@/lib/projects";
 import { Container } from "@/components/layout/Container";
 import { Section } from "@/components/layout/Section";
-import { ProjectGrid } from "@/components/project/ProjectGrid";
+import { ProjectFilter } from "@/components/project/ProjectFilter";
 
 export const metadata = routeMetadata.projects;
 
@@ -27,7 +27,7 @@ export default function ProjectsPage() {
           <h2 className="sr-only" id="projects-list-title">
             All projects
           </h2>
-          <ProjectGrid projects={projects} />
+          <ProjectFilter projects={projects} />
         </Container>
       </Section>
     </div>
