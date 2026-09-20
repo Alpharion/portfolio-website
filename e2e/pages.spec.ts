@@ -51,6 +51,9 @@ test.describe("projects list", () => {
       await page.goto("/projects");
       await page.locator(`[data-testid="project-card"][data-slug="${project.slug}"]`).click();
       await expect(page).toHaveURL(new RegExp(`/projects/${project.slug}$`));
+      // The page transition can briefly keep the outgoing and incoming pages in the DOM together;
+      // wait for it to settle to a single detail root before asserting on it.
+      await expect(page.getByTestId("project-detail")).toHaveCount(1);
       await expect(page.getByTestId("project-detail")).toBeVisible();
       await expect(page.locator("h1")).toHaveCount(1);
       await expect(page.locator("h1")).toContainText(project.title);
@@ -66,7 +69,9 @@ test.describe("project detail pages", () => {
       await expectPageBasics(page);
       await expect(page.getByTestId("project-detail")).toBeVisible();
       await expect(page.getByTestId("project-detail").locator("h1")).toHaveCount(1);
-      await expect(page).toHaveTitle(new RegExp(project.title.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
+      await expect(page).toHaveTitle(
+        new RegExp(project.title.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")),
+      );
     });
 
     test(`/projects/${project.slug} images load with alt text`, async ({ page }) => {
