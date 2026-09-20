@@ -1,4 +1,393 @@
 /*
  * Component styles, keyed to the semantic class names in docs/interfaces.md §4.
- * Owner: UI/UX Agent. Use @apply with token-backed utilities; never hardcode hex or raw ms.
+ * Owner: UI/UX Agent. Plain CSS over design tokens (var(--color-*), var(--duration-*)…):
+ * never hardcode hex or raw ms here. Wrapped in @layer components so Tailwind utilities
+ * that Structure adds via className still win.
  */
+
+@layer components {
+  /* ========================================================================
+   * Layout primitives
+   * ====================================================================== */
+
+  .layout-container {
+    width: 100%;
+    max-width: var(--container-page);
+    margin-inline: auto;
+    padding-inline: var(--space-gutter);
+  }
+
+  .layout-section {
+    position: relative;
+    padding-block: var(--space-section);
+  }
+
+  .layout-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.5rem;
+  }
+
+  .layout-grid--cols-1 {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  @media (min-width: 40rem) {
+    .layout-grid--cols-2,
+    .layout-grid--cols-3,
+    .layout-grid--cols-4 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .layout-grid--cols-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .layout-grid--cols-4 {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  .layout-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .layout-stack--gap-sm {
+    gap: 0.75rem;
+  }
+
+  .layout-stack--gap-md {
+    gap: 1.5rem;
+  }
+
+  .layout-stack--gap-lg {
+    gap: 3rem;
+  }
+
+  /* ========================================================================
+   * Skip link — hidden until focused
+   * ====================================================================== */
+
+  .skip-link {
+    position: fixed;
+    top: 0.75rem;
+    left: 0.75rem;
+    z-index: 100;
+    padding: 0.625rem 1rem;
+    border-radius: 999px;
+    background: var(--color-accent);
+    color: var(--color-bg);
+    font-size: var(--text-small);
+    font-weight: 600;
+    text-decoration: none;
+    transform: translateY(-200%);
+    transition: transform var(--duration-fast) var(--ease-out);
+  }
+
+  .skip-link:focus,
+  .skip-link:focus-visible {
+    transform: translateY(0);
+    outline: 2px solid var(--color-fg);
+    outline-offset: 2px;
+  }
+
+  /* ========================================================================
+   * Site header + navigation (glassy, sticky)
+   * ====================================================================== */
+
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    border-bottom: 1px solid var(--color-border);
+    background: rgb(from var(--color-bg) r g b / 0.72);
+    -webkit-backdrop-filter: blur(16px) saturate(140%);
+    backdrop-filter: blur(16px) saturate(140%);
+  }
+
+  .site-header__inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    width: 100%;
+    max-width: var(--container-page);
+    min-height: var(--header-height);
+    margin-inline: auto;
+    padding-inline: var(--space-gutter);
+  }
+
+  /* Tolerate Structure nesting the inner row inside a layout-container */
+  .layout-container > .site-header__inner,
+  .layout-container .site-header__inner {
+    max-width: none;
+    padding-inline: 0;
+  }
+
+  .site-header__brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.625rem;
+    font-weight: 600;
+    font-size: 1.0625rem;
+    letter-spacing: -0.02em;
+    color: var(--color-fg);
+    text-decoration: none;
+    transition: color var(--duration-fast) var(--ease-out);
+  }
+
+  .site-header__brand::before {
+    content: "";
+    flex: none;
+    width: 0.625rem;
+    height: 0.625rem;
+    border-radius: 999px;
+    background: linear-gradient(135deg, var(--color-accent), var(--color-accent-strong));
+    box-shadow: 0 0 14px 1px rgb(from var(--color-accent) r g b / 0.7);
+  }
+
+  .site-header__brand:hover {
+    color: var(--color-accent);
+  }
+
+  .site-nav {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .site-nav__toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    padding: 0;
+    border: 1px solid var(--color-border-strong);
+    border-radius: var(--radius-md);
+    background: rgb(from var(--color-surface-raised) r g b / 0.6);
+    color: var(--color-fg);
+    cursor: pointer;
+    transition:
+      border-color var(--duration-fast) var(--ease-out),
+      background-color var(--duration-fast) var(--ease-out),
+      color var(--duration-fast) var(--ease-out);
+  }
+
+  .site-nav__toggle svg {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  .site-nav__toggle:hover,
+  .site-nav__toggle[aria-expanded="true"] {
+    border-color: var(--color-accent);
+    background: var(--color-accent-soft);
+    color: var(--color-accent);
+  }
+
+  .site-nav__list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .site-nav__link {
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius-md);
+    color: var(--color-fg-muted);
+    font-size: var(--text-small);
+    font-weight: 500;
+    text-decoration: none;
+    transition:
+      color var(--duration-fast) var(--ease-out),
+      background-color var(--duration-fast) var(--ease-out);
+  }
+
+  .site-nav__link:hover {
+    color: var(--color-fg);
+    background: rgb(from var(--color-fg) r g b / 0.05);
+  }
+
+  .site-nav__link:active {
+    background: rgb(from var(--color-fg) r g b / 0.08);
+  }
+
+  .site-nav__link.is-active,
+  .site-nav__link[aria-current="page"] {
+    color: var(--color-fg);
+    background: var(--color-accent-soft);
+    box-shadow: inset 0 0 0 1px rgb(from var(--color-accent) r g b / 0.25);
+  }
+
+  /* Mobile: menu is a dropdown panel under the header, toggled by aria-expanded */
+  .site-nav__menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    left: 0;
+    z-index: 40;
+    padding: 0.75rem var(--space-gutter) 1.25rem;
+    border-bottom: 1px solid var(--color-border);
+    background: rgb(from var(--color-bg) r g b / 0.94);
+    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
+    box-shadow: 0 24px 40px -24px rgb(0 0 0 / 0.8);
+    /* closed state */
+    display: block;
+    visibility: hidden;
+    opacity: 0;
+    transform: translateY(-0.5rem);
+    pointer-events: none;
+    transition:
+      opacity var(--duration-base) var(--ease-out),
+      transform var(--duration-base) var(--ease-out),
+      visibility 0s linear var(--duration-base);
+  }
+
+  /* open state: robust to the menu being a sibling or anywhere inside the header */
+  .site-header:has(.site-nav__toggle[aria-expanded="true"]) .site-nav__menu,
+  .site-nav__toggle[aria-expanded="true"] ~ .site-nav__menu,
+  .site-nav__menu[data-open="true"] {
+    visibility: visible;
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+    transition-delay: 0s;
+  }
+
+  @media (min-width: 48rem) {
+    .site-nav__toggle {
+      display: none;
+    }
+
+    .site-nav__menu,
+    .site-header:has(.site-nav__toggle[aria-expanded="true"]) .site-nav__menu,
+    .site-nav__toggle[aria-expanded="true"] ~ .site-nav__menu,
+    .site-nav__menu[data-open="true"] {
+      position: static;
+      display: block;
+      visibility: visible;
+      opacity: 1;
+      transform: none;
+      pointer-events: auto;
+      padding: 0;
+      border: 0;
+      background: none;
+      -webkit-backdrop-filter: none;
+      backdrop-filter: none;
+      box-shadow: none;
+    }
+
+    .site-nav__list {
+      flex-direction: row;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .site-nav__link {
+      padding: 0.5rem 0.875rem;
+      border-radius: 999px;
+    }
+  }
+
+  /* ========================================================================
+   * Site footer
+   * ====================================================================== */
+
+  .site-footer {
+    position: relative;
+    margin-top: var(--space-section);
+    border-top: 1px solid var(--color-border);
+    background: linear-gradient(to bottom, transparent, rgb(from var(--color-surface) r g b / 0.7));
+  }
+
+  /* hairline glow on the footer's top edge */
+  .site-footer::before {
+    content: "";
+    position: absolute;
+    top: -1px;
+    left: 50%;
+    width: min(32rem, 70%);
+    height: 1px;
+    transform: translateX(-50%);
+    background: linear-gradient(to right, transparent, var(--color-accent), transparent);
+    opacity: 0.55;
+  }
+
+  .site-footer__inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem 2rem;
+    width: 100%;
+    max-width: var(--container-page);
+    margin-inline: auto;
+    padding: 2rem var(--space-gutter);
+  }
+
+  .layout-container > .site-footer__inner,
+  .layout-container .site-footer__inner {
+    max-width: none;
+    padding-inline: 0;
+  }
+
+  .site-footer__note {
+    margin: 0;
+    color: var(--color-fg-subtle);
+    font-size: var(--text-small);
+  }
+
+  .site-footer__socials {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .site-footer__social-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-width: 2.25rem;
+    height: 2.25rem;
+    padding-inline: 0.5rem;
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    color: var(--color-fg-muted);
+    font-size: var(--text-small);
+    text-decoration: none;
+    transition:
+      color var(--duration-fast) var(--ease-out),
+      border-color var(--duration-fast) var(--ease-out),
+      background-color var(--duration-fast) var(--ease-out),
+      box-shadow var(--duration-base) var(--ease-out);
+  }
+
+  .site-footer__social-link svg {
+    width: 1.125rem;
+    height: 1.125rem;
+  }
+
+  .site-footer__social-link:hover {
+    color: var(--color-accent);
+    border-color: rgb(from var(--color-accent) r g b / 0.5);
+    background: var(--color-accent-soft);
+    box-shadow: var(--glow-accent);
+  }
+}
