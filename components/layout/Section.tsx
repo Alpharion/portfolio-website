@@ -12,6 +12,8 @@ export interface SectionProps {
   /** Accessible name for a landmark section: point at its heading's id. */
   "aria-labelledby"?: string;
   "aria-label"?: string;
+  /** e.g. "carousel" for a section that is a carousel landmark */
+  "aria-roledescription"?: string;
 }
 
 /** Vertical page section. Spacing is styled via `.layout-section`. */
@@ -23,6 +25,7 @@ export function Section({
   theme,
   "aria-labelledby": labelledBy,
   "aria-label": label,
+  "aria-roledescription": roleDescription,
 }: SectionProps) {
   const classes = clsx("layout-section", className);
 
@@ -35,6 +38,7 @@ export function Section({
         className={classes}
         aria-labelledby={labelledBy}
         aria-label={label}
+        aria-roledescription={roleDescription}
       >
         {children}
       </SectionTheme>
@@ -42,7 +46,13 @@ export function Section({
   }
 
   return (
-    <Tag id={id} className={classes} aria-labelledby={labelledBy} aria-label={label}>
+    <Tag
+      id={id}
+      className={classes}
+      aria-labelledby={labelledBy}
+      aria-label={label}
+      aria-roledescription={roleDescription}
+    >
       {children}
     </Tag>
   );
