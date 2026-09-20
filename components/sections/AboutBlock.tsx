@@ -17,11 +17,13 @@ export function AboutBlock({ content }: AboutBlockProps) {
 
   return (
     <FadeIn className="about-block">
-      <div className="about-block__bio">
-        {bio.map((paragraph, index) => (
-          <p key={index}>{paragraph}</p>
-        ))}
-      </div>
+      {bio.length > 0 ? (
+        <div className="about-block__bio">
+          {bio.map((paragraph, index) => (
+            <p key={index}>{paragraph}</p>
+          ))}
+        </div>
+      ) : null}
 
       {avatar ? (
         <div className="about-block__avatar">
@@ -33,7 +35,7 @@ export function AboutBlock({ content }: AboutBlockProps) {
         <div className="about-block__skills">
           {skills.map((group) => (
             <section key={group.group} className="about-block__skill-group">
-              <h2 className="about-block__skill-title">{group.group}</h2>
+              <h3 className="about-block__skill-title">{group.group}</h3>
               <ul className="about-block__skill-list">
                 {group.items.map((item) => (
                   <li key={item}>

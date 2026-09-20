@@ -14,9 +14,18 @@ export function FeaturedProjects({ projects }: FeaturedProjectsProps) {
   if (projects.length === 0) return null;
 
   return (
-    <Section className="featured-projects" id="featured-projects">
+    <Section
+      className="featured-projects"
+      id="featured-projects"
+      theme="violet"
+      aria-labelledby="featured-projects-title"
+    >
       <Container>
-        <SectionHeading eyebrow="Selected work" title="Featured projects" />
+        <SectionHeading
+          eyebrow="Selected work"
+          title="Featured projects"
+          titleId="featured-projects-title"
+        />
         <ProjectGrid projects={projects} />
         <div className="featured-projects__actions">
           <ButtonLink href="/projects" variant="ghost">
