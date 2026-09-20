@@ -32,21 +32,64 @@ vi.mock("next/navigation", () => ({
 }));
 
 // next/image pulls in the image optimiser runtime; a plain <img> is enough for DOM assertions.
+// Props that only next/image understands are stripped so they don't leak onto the <img>.
+const NEXT_IMAGE_ONLY_PROPS = [
+  "fill",
+  "priority",
+  "placeholder",
+  "blurDataURL",
+  "quality",
+  "unoptimized",
+  "loader",
+];
+
 vi.mock("next/image", () => ({
-  default: ({
-    src,
-    alt,
-    fill: _fill,
-    priority: _priority,
-    placeholder: _placeholder,
-    blurDataURL: _blur,
-    quality: _quality,
-    unoptimized: _unoptimized,
-    ...rest
-  }: Record<string, unknown> & { src: unknown; alt: string }) =>
-    createElement("img", {
+  default: ({ src, alt, ...rest }: Record<string, unknown> & { src: unknown; alt: string }) => {
+    const domProps = Object.fromEntries(
+      Object.entries(rest).filter(([key]) => !NEXT_IMAGE_ONLY_PROPS.includes(key)),
+    );
+    return createElement("img", {
       src: typeof src === "string" ? src : (src as { src: string }).src,
       alt,
-      ...rest,
-    }),
+      ...domProps,
+    });
+  },
 }));
+
+/**
+ * jsdom has no IntersectionObserver or matchMedia; framer-motion (FadeIn's `whileInView`,
+ * `useReducedMotion`) needs both. The observer never reports intersections, which is fine
+ * for DOM-structure assertions: children are still rendered, just not animated in.
+ */
+class IntersectionObserverStub implements IntersectionObserver {
+  readonly root = null;
+  readonly rootMargin = "";
+  readonly thresholds: readonly number[] = [];
+  observe(): void {}
+  unobserve(): void {}
+  disconnect(): void {}
+  takeRecords(): IntersectionObserverEntry[] {
+    return [];
+  }
+}
+
+if (typeof globalThis.IntersectionObserver === "undefined") {
+  globalThis.IntersectionObserver = IntersectionObserverStub;
+}
+
+if (typeof window !== "undefined" && typeof window.matchMedia !== "function") {
+  Object.defineProperty(window, "matchMedia", {
+    writable: true,
+    configurable: true,
+    value: (query: string): MediaQueryList => ({
+      matches: false,
+      media: query,
+      onchange: null,
+      addEventListener: () => undefined,
+      removeEventListener: () => undefined,
+      addListener: () => undefined,
+      removeListener: () => undefined,
+      dispatchEvent: () => false,
+    }),
+  });
+}
