@@ -4,12 +4,199 @@
 
 /* Owner: UI/UX Agent. Structure/Content agents must not edit this file. */
 
-html {
-  background: var(--color-bg);
+@layer base {
+  html {
+    background: var(--color-bg);
+    color-scheme: dark;
+    scroll-behavior: smooth;
+    /* keep anchored targets clear of the sticky header */
+    scroll-padding-top: calc(var(--header-height) + 1rem);
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    scrollbar-color: var(--color-border-strong) var(--color-bg);
+    scrollbar-width: thin;
+  }
+
+  body {
+    position: relative;
+    isolation: isolate; /* lets the fixed background layer sit at z-index -1 above body's own fill */
+    background: var(--color-bg);
+    color: var(--color-fg);
+    font-family: var(--font-sans);
+    font-size: var(--text-body);
+    line-height: 1.6;
+    font-feature-settings:
+      "ss01" 1,
+      "cv11" 1;
+    text-rendering: optimizeLegibility;
+    overflow-x: clip;
+  }
+
+  /*
+   * Ambient background: a soft violet glow at the top, a faint cyan glow at the lower right,
+   * and a 1px grid that fades out towards the edges (Better Stack-style).
+   */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background-image:
+      radial-gradient(
+        60rem 32rem at 50% -8%,
+        rgb(from var(--color-accent-strong) r g b / 0.28),
+        transparent 70%
+      ),
+      radial-gradient(
+        40rem 28rem at 100% 100%,
+        rgb(from var(--color-accent-2) r g b / 0.06),
+        transparent 70%
+      ),
+      linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+    background-size:
+      auto,
+      auto,
+      var(--grid-size) var(--grid-size),
+      var(--grid-size) var(--grid-size);
+    background-position:
+      center top,
+      center,
+      center top,
+      center top;
+    -webkit-mask-image: radial-gradient(ellipse 90% 75% at 50% 0%, black 30%, transparent 100%);
+    mask-image: radial-gradient(ellipse 90% 75% at 50% 0%, black 30%, transparent 100%);
+  }
+
+  main {
+    flex: 1 0 auto;
+  }
+
+  /* Typography defaults */
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-weight: 600;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    text-wrap: balance;
+    color: var(--color-fg);
+  }
+
+  h1 {
+    font-size: var(--text-h1);
+  }
+
+  h2 {
+    font-size: var(--text-h2);
+  }
+
+  h3 {
+    font-size: 1.25rem;
+    letter-spacing: -0.02em;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  a {
+    color: inherit;
+    text-decoration-color: rgb(from var(--color-accent) r g b / 0.4);
+    text-underline-offset: 0.2em;
+    transition: color var(--duration-fast) var(--ease-out);
+  }
+
+  strong,
+  b {
+    font-weight: 600;
+  }
+
+  code,
+  kbd,
+  samp {
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+  }
+
+  img,
+  svg,
+  video {
+    display: block;
+    max-width: 100%;
+  }
+
+  hr {
+    border: 0;
+    border-top: 1px solid var(--color-border);
+  }
+
+  ::selection {
+    background: rgb(from var(--color-accent-strong) r g b / 0.55);
+    color: var(--color-fg);
+  }
+
+  /* Visible focus for everything keyboard-reachable, using the accent */
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+  }
+
+  :focus:not(:focus-visible) {
+    outline: none;
+  }
+
+  /* WebKit / Blink scrollbars to match the theme */
+  ::-webkit-scrollbar {
+    width: 0.75rem;
+    height: 0.75rem;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--color-bg);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-border-strong);
+    border: 3px solid var(--color-bg);
+    border-radius: 999px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-fg-subtle);
+  }
 }
 
-body {
-  background: var(--color-bg);
-  color: var(--color-fg);
-  font-family: var(--font-sans);
+@layer utilities {
+  /* Fallbacks so motion-wrapped content is never stuck invisible (framer-motion SSRs the
+     "hidden" state inline): without JS, or with reduced motion, show everything. */
+  @media (scripting: none) {
+    [data-fade-in] {
+      opacity: 1 !important;
+      transform: none !important;
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  [data-fade-in],
+  [data-hover-tilt] {
+    opacity: 1 !important;
+    transform: none !important;
+  }
 }
