@@ -40,6 +40,32 @@ describe("Hero", () => {
   });
 });
 
+describe("Hero visual", () => {
+  it("renders a decorative aria-hidden visual inside the hero", () => {
+    const { container } = render(<Hero content={siteContent.hero} />);
+    const visual = container.querySelector(".hero__visual");
+    expect(visual).toBeInTheDocument();
+    expect(visual).toHaveAttribute("aria-hidden", "true");
+    expect(
+      within(screen.getByTestId("hero")).getByRole("heading", { level: 1 }),
+    ).toBeInTheDocument();
+  });
+
+  it("keeps the visual out of the accessibility tree and out of the tab order", () => {
+    const { container } = render(<Hero content={siteContent.hero} />);
+    const visual = container.querySelector(".hero__visual") as HTMLElement;
+    expect(visual.querySelector("a, button, input, textarea, select, [tabindex]")).toBeNull();
+    expect(visual.querySelector("h1, h2, h3, h4, h5, h6")).toBeNull();
+    expect(within(visual).queryAllByRole("link")).toHaveLength(0);
+  });
+
+  it("still exposes exactly one h1 and the hero test id", () => {
+    render(<Hero content={siteContent.hero} />);
+    expect(screen.getAllByRole("heading", { level: 1 })).toHaveLength(1);
+    expect(screen.getAllByTestId("hero")).toHaveLength(1);
+  });
+});
+
 describe("AboutBlock", () => {
   it("renders every bio paragraph, skill group/item and highlight", () => {
     const { about } = siteContent;
