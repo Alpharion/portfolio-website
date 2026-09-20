@@ -1,0 +1,43 @@
+{
+  "ci": {
+    "collect": {
+      "startServerCommand": "npm run start -- -p 3100",
+      "startServerReadyPattern": "Ready in",
+      "startServerReadyTimeout": 60000,
+      "url": [
+        "http://localhost:3100/",
+        "http://localhost:3100/projects",
+        "http://localhost:3100/about",
+        "http://localhost:3100/contact",
+        "http://localhost:3100/projects/lumen-analytics"
+      ],
+      "numberOfRuns": 3,
+      "settings": {
+        "preset": "desktop",
+        "chromeFlags": "--no-sandbox --headless=new"
+      }
+    },
+    "assert": {
+      "assertions": {
+        "categories:accessibility": ["error", { "minScore": 0.95 }],
+        "categories:best-practices": ["error", { "minScore": 0.9 }],
+        "categories:seo": ["error", { "minScore": 0.9 }],
+        "categories:performance": ["warn", { "minScore": 0.85 }],
+        "color-contrast": "error",
+        "image-alt": "error",
+        "document-title": "error",
+        "meta-description": "error",
+        "link-name": "error",
+        "heading-order": "error",
+        "html-has-lang": "error",
+        "button-name": "error",
+        "label": "error",
+        "is-crawlable": "error"
+      }
+    },
+    "upload": {
+      "target": "filesystem",
+      "outputDir": ".lighthouseci"
+    }
+  }
+}
