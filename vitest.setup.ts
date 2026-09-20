@@ -73,7 +73,7 @@ class IntersectionObserverStub implements IntersectionObserver {
   }
 }
 
-if (typeof globalThis.IntersectionObserver === "undefined") {
+if (typeof window !== "undefined" && typeof globalThis.IntersectionObserver === "undefined") {
   globalThis.IntersectionObserver = IntersectionObserverStub;
 }
 
@@ -92,4 +92,26 @@ if (typeof window !== "undefined" && typeof window.matchMedia !== "function") {
       dispatchEvent: () => false,
     }),
   });
+}
+
+/** ResizeObserver (ProjectCarousel measures its track with it) and element scrolling helpers. */
+class ResizeObserverStub implements ResizeObserver {
+  observe(): void {}
+  unobserve(): void {}
+  disconnect(): void {}
+}
+
+if (typeof window !== "undefined" && typeof globalThis.ResizeObserver === "undefined") {
+  globalThis.ResizeObserver = ResizeObserverStub;
+}
+
+// Guarded: the API route tests run in the node environment, where there is no DOM.
+for (const method of ["scrollTo", "scrollBy", "scrollIntoView"] as const) {
+  if (typeof Element !== "undefined" && typeof Element.prototype[method] !== "function") {
+    Object.defineProperty(Element.prototype, method, {
+      writable: true,
+      configurable: true,
+      value: () => undefined,
+    });
+  }
 }

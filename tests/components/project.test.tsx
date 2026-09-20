@@ -73,13 +73,19 @@ describe("ProjectGrid", () => {
 });
 
 describe("FeaturedProjects", () => {
-  it("renders a card for each featured project and links to the full list", () => {
+  it("renders a card for each featured project and no link to the full project list", () => {
     const featured = getFeaturedProjects();
     render(<FeaturedProjects projects={featured} />);
     expect(screen.getAllByTestId("project-card")).toHaveLength(featured.length);
-    expect(screen.getAllByRole("link").some((l) => l.getAttribute("href") === "/projects")).toBe(
-      true,
-    );
+    // The section is a carousel now: the "view all projects" link was removed on purpose.
+    const hrefs = screen.getAllByRole("link").map((l) => l.getAttribute("href"));
+    expect(hrefs).not.toContain("/projects");
+    expect(hrefs.every((h) => h?.startsWith("/projects/"))).toBe(true);
+  });
+
+  it("renders nothing when there are no featured projects", () => {
+    const { container } = render(<FeaturedProjects projects={[]} />);
+    expect(container).toBeEmptyDOMElement();
   });
 });
 
