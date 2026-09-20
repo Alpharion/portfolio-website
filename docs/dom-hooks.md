@@ -78,3 +78,73 @@ The contact submit button is `btn btn--primary contact-form__submit`. The résum
 - `FadeIn` / `HoverTilt` wrappers add a `div` around each project card in the grid (inside the
   `li`), around the hero content (`FadeIn` receives `className="hero__inner"`), around
   `.about-block` (`FadeIn` receives `className="about-block"`) and each detail gallery figure.
+
+## Section theming (added by UI/UX, round 2)
+
+Pages are built from full-bleed themed bands. The colour tokens are re-scoped per band, so every
+component inside re-themes with no extra classes. Palettes live in `styles/tokens.css`; behaviour in
+`components/motion/SectionTheme.tsx` and `section-theme-driver.ts`.
+
+| Hook                                                                   | Where / meaning                                                                                                                                                                                                                                                                                         |
+| ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `data-section-theme="void\|violet\|midnight"`                          | On a band's root element. `void` = page canvas (near-black), `violet` = deep violet with inverted (light) accents, `midnight` = subtle navy. Set by `<Section theme="…">` (`components/layout/Section.tsx`) or `<SectionTheme>`; the hero and the two project-detail bands use `SectionTheme` directly. |
+| `html[data-header-theme]`                                              | Set at runtime to the theme of the band under the sticky header; the header re-themes through the same tokens. Absent without JS (header stays `void`).                                                                                                                                                 |
+| `<Section theme aria-labelledby aria-label>`                           | New optional props on `Section`; `aria-labelledby` points at the band's heading.                                                                                                                                                                                                                        |
+| `<SectionHeading titleId>`                                             | New optional prop: id for the `h2` (so a band can be `aria-labelledby` it).                                                                                                                                                                                                                             |
+| `skills-showcase`                                                      | Home "Tools I reach for" band (`SkillsShowcase`, id `skills`, theme violet), built from `siteContent.about.skills`.                                                                                                                                                                                     |
+| `skills-showcase__rows`                                                | Wrapper of the two marquee rows.                                                                                                                                                                                                                                                                        |
+| `marquee` (+ `marquee--reverse`) · `marquee__inner` · `marquee__track` | CSS-only tech marquee. `marquee__inner` is the animated flex row; it holds 4 identical `ul.marquee__track` lists, only the first is exposed to assistive tech (the others are `aria-hidden`). Under reduced motion the row is static, wrapped and shows one list.                                       |
+| `about-skills` · `about-highlights`                                    | The violet skills band and the void "At a glance" band on `/about`.                                                                                                                                                                                                                                     |
+| `projects-intro` · `projects-list`                                     | The void header band and the violet grid band on `/projects`.                                                                                                                                                                                                                                           |
+| `contact-intro` · `contact-panel`                                      | The void header band and the violet form band on `/contact`.                                                                                                                                                                                                                                            |
+| `project-detail__top` · `project-detail__content`                      | The two bands inside `article.project-detail`: header/meta/links (void) and body/gallery (violet). Both are `div.layout-section` (not landmarks). `.project-detail` no longer sits inside an outer `Section`.                                                                                           |
+
+Other notes:
+
+- `home-about` (void) now also renders the highlights, styled as a stats strip; `home-cta` is a
+  `midnight` band. Home order: hero (void), featured (violet), about (void), skills (violet), CTA
+  (midnight).
+- `AboutBlock` omits `.about-block__bio` when `bio` is empty, and the skill group titles
+  (`about-block__skill-title`) are now `h3` (they sit under a band `h2`). `/about` renders three
+  `AboutBlock`s (bio + avatar, skills, highlights), one per band.
+
+## Round 3
+
+**Featured projects carousel** (`components/project/ProjectCarousel.tsx`, rendered by
+`FeaturedProjects`; the old "view all projects" link and `featured-projects__actions` are gone).
+
+| Hook                                                                 | Meaning                                                                                                                                                                                                            |
+| -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `<section aria-roledescription="carousel" aria-labelledby>`          | The `featured-projects` band. `Section` gained an `aria-roledescription` prop.                                                                                                                                     |
+| `project-carousel` (`data-position="ssr\|fits\|start\|middle\|end"`) | Root. `data-position` mirrors the scroll position (`ssr` = not yet measured).                                                                                                                                      |
+| `project-carousel__header` · `project-carousel__controls`            | Heading + arrows row. Controls are `hidden` until measured and when every card fits.                                                                                                                               |
+| `project-carousel__button`                                           | Round 44px arrow button. `data-testid="carousel-prev"` (`aria-label="Previous project"`) / `"carousel-next"` (`"Next project"`), `disabled` at the start / end.                                                    |
+| `project-carousel__track` (`data-testid="carousel-track"`)           | Scroll-snap scroller: `role="group"`, `aria-label="Featured projects"`, `tabindex="0"`, Left/Right keys move one card.                                                                                             |
+| `project-carousel__slide`                                            | One per project: `role="group" aria-roledescription="slide" aria-label="N of M"`; wraps `HoverTilt` > `ProjectCard` (cards keep `data-testid="project-card"`). No `FadeIn` per card, one `FadeIn` wraps the track. |
+
+**Projects filter** (`components/project/ProjectFilter.tsx`, used only on `/projects`; `ProjectGrid` is unchanged).
+
+| Hook                                                                                      | Meaning                                                                                                                                                       |
+| ----------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `project-filter` (`data-testid="project-filter"`)                                         | Root.                                                                                                                                                         |
+| `project-filter__bar` · `__group` · `__label` · `__chips`                                 | Panel and the two labelled `role="group"` rows (Status, Technology). Bar is hidden when scripting is off.                                                     |
+| `project-filter__chip` (`aria-pressed`)                                                   | Toggle buttons: `filter-status-all\|active\|in-progress\|archived`, `filter-tech-all`, `filter-tech-<slug>` (e.g. `filter-tech-next-js`, `+` becomes `plus`). |
+| `project-filter__more` (`data-testid="filter-tech-toggle"`)                               | "Show all (N)" / "Show fewer", `aria-expanded`. Collapsed shows the 8 most used tags (plus the selected one).                                                 |
+| `project-filter__summary` · `__count` (`data-testid="filter-count"`)                      | "Showing X of Y projects", `role="status" aria-live="polite"`.                                                                                                |
+| `project-filter__clear` (`data-testid="filter-clear"`)                                    | "Clear filters", rendered only while a filter is active.                                                                                                      |
+| `project-filter__empty` (`data-testid="filter-empty"`) · `__empty-title` · `__empty-hint` | Empty state; its button is `data-testid="filter-empty-clear"`.                                                                                                |
+
+Filters are single-select each ("All" default; pressing the active chip again deselects) and combine with AND.
+The server renders all cards; the grid remounts per filter combination so `FadeIn` replays.
+
+**Hero visual** (`components/sections/HeroVisual.tsx`, decorative, `aria-hidden`).
+
+| Class                                                                                                 | Meaning                                                             |
+| ----------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------- |
+| `hero__visual` · `hero__visual-stage`                                                                 | `aria-hidden` root (fixed 6:5 aspect ratio) and its `FadeIn` stage. |
+| `hero__orbit` (`--outer` / `--inner`)                                                                 | Rotating rings.                                                     |
+| `hero__window` · `hero__window-bar` · `hero__window-body` · `hero__code-prompt\|ok\|key\|dim\|cursor` | Terminal card.                                                      |
+| `hero__vitals` · `hero__vitals-label\|value\|chart\|bars`                                             | Web-vitals card.                                                    |
+| `hero__chip` (`--deploy` / `--types`)                                                                 | Floating status pills.                                              |
+
+The hero container is now a two-column grid from 64rem (`hero__inner` left, `hero__visual` right).

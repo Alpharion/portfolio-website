@@ -1,7 +1,6 @@
 import { notFound } from "next/navigation";
 import { projectMetadata } from "@/data/metadata";
 import { getProjectBySlug, getProjectSlugs } from "@/lib/projects";
-import { Section } from "@/components/layout/Section";
 import { ProjectDetail } from "@/components/project/ProjectDetail";
 
 export function generateStaticParams() {
@@ -21,9 +20,7 @@ export default async function ProjectPage({ params }: PageProps<"/projects/[slug
 
   return (
     <div className="page">
-      <Section>
-        <ProjectDetail project={project} />
-      </Section>
+      <ProjectDetail project={project} />
     </div>
   );
 }

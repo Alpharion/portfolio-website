@@ -11,7 +11,7 @@ export default function ContactPage() {
 
   return (
     <div className="page">
-      <Section>
+      <Section theme="void" className="contact-intro">
         <Container>
           <header className="page__header">
             <h1 className="page__title">{contact.heading}</h1>
@@ -22,6 +22,11 @@ export default function ContactPage() {
               </a>
             </p>
           </header>
+        </Container>
+      </Section>
+
+      <Section theme="violet" className="contact-panel" aria-label="Contact form">
+        <Container>
           <ContactForm />
         </Container>
       </Section>

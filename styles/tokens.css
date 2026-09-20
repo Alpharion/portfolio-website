@@ -72,12 +72,76 @@
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
   --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
 
-  /* Effects */
+  /* Long-running ambient motion (seconds, not ms: one full marquee loop) */
+  --duration-marquee: 60s;
+  --duration-float: 7s; /* one bob of a floating hero card */
+  --duration-orbit: 90s; /* one full turn of a hero orbit ring */
+
+  /* Height of the gradient blend zone at a themed section's top and bottom edges. It equals the
+     section's own padding, so the colour has fully arrived before any content starts. */
+  --section-blend: var(--space-section);
+
+  --grid-size: 3.5rem;
+}
+
+/*
+ * Derived tokens. These reference the colour tokens through var(), and a var() inside a custom
+ * property resolves where the property is declared, so they must be re-declared inside every
+ * theme scope for cards, glows and grid lines to follow the section theme.
+ */
+:root,
+[data-section-theme],
+html[data-header-theme] .site-header {
   --glow-accent: 0 0 60px -10px var(--color-accent-soft);
   --glow-accent-strong: 0 8px 40px -8px rgb(from var(--color-accent-strong) r g b / 0.65);
   --shadow-card:
     0 1px 0 0 rgb(from var(--color-fg) r g b / 0.04) inset, 0 24px 48px -32px rgb(0 0 0 / 0.8);
-  /* Background decoration */
   --grid-line: rgb(from var(--color-fg) r g b / 0.04);
-  --grid-size: 3.5rem;
+}
+
+/*
+ * Section themes (scroll-driven theming). The default palette in @theme above is the `void`
+ * theme (near-black, blue-tinted, lavender accent). A section opts into another palette with
+ * data-section-theme="violet" | "midnight"; every component inside re-themes because it only
+ * consumes the tokens. The sticky header adopts whichever theme is under it through
+ * html[data-header-theme], which components/motion/section-theme-driver.ts keeps up to date.
+ *
+ * Contrast (WCAG, text on bg / surface / surface-raised), measured:
+ *   violet   fg 15.5/13.5/11.3 · muted 10.6/9.2/7.7 · subtle 7.1/6.2/5.2 · accent 11.0/9.5/8.0
+ *            on-accent on accent-strong 13.6 (button gradient bottom 6.9)
+ *   midnight fg 16.7/15.2/13.5 · muted 9.6/8.7/7.8 · subtle 6.6/5.9/5.3 · accent 8.9/8.1/7.2
+ */
+[data-section-theme="violet"],
+html[data-header-theme="violet"] .site-header {
+  --color-bg: #1c1150;
+  --color-surface: #271b66;
+  --color-surface-raised: #33257f;
+  --color-border: #45379a;
+  --color-border-strong: #6355c2;
+
+  --color-fg: #f7f4ff;
+  --color-fg-muted: #d0c7f7;
+  --color-fg-subtle: #aaa0e6;
+
+  --color-accent: #d6c9ff;
+  --color-accent-strong: #ebe3ff;
+  --color-accent-soft: #d6c9ff2e;
+  --color-accent-2: #a5e6ff;
+  --color-on-accent: #1c1150; /* dark text on the light "inverted" primary button */
+
+  --color-success: #86efc4;
+  --color-danger: #ffb4c0;
+}
+
+[data-section-theme="midnight"],
+html[data-header-theme="midnight"] .site-header {
+  --color-bg: #0a0f2b;
+  --color-surface: #101745;
+  --color-surface-raised: #172058;
+  --color-border: #263070;
+  --color-border-strong: #364590;
+
+  --color-fg: #eef1ff;
+  --color-fg-muted: #aeb8e0;
+  --color-fg-subtle: #8c96c8;
 }
