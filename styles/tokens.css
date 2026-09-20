@@ -62,7 +62,7 @@
   color-scheme: dark;
 
   /* Spacing rhythm for layout primitives */
-  --space-section: clamp(4rem, 10vw, 8rem);
+  --space-section: clamp(3.5rem, 8vw, 6.5rem);
   --space-gutter: clamp(1rem, 4vw, 2rem);
 
   /* Motion */
@@ -75,7 +75,8 @@
   /* Effects */
   --glow-accent: 0 0 60px -10px var(--color-accent-soft);
   --glow-accent-strong: 0 8px 40px -8px rgb(from var(--color-accent-strong) r g b / 0.65);
-  --shadow-card: 0 1px 0 0 rgb(from var(--color-fg) r g b / 0.04) inset, 0 24px 48px -32px rgb(0 0 0 / 0.8);
+  --shadow-card:
+    0 1px 0 0 rgb(from var(--color-fg) r g b / 0.04) inset, 0 24px 48px -32px rgb(0 0 0 / 0.8);
   /* Background decoration */
   --grid-line: rgb(from var(--color-fg) r g b / 0.04);
   --grid-size: 3.5rem;
