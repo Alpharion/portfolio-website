@@ -74,6 +74,8 @@
 
   /* Long-running ambient motion (seconds, not ms: one full marquee loop) */
   --duration-marquee: 60s;
+  --duration-float: 7s; /* one bob of a floating hero card */
+  --duration-orbit: 90s; /* one full turn of a hero orbit ring */
 
   /* Height of the gradient blend zone at a themed section's top and bottom edges. It equals the
      section's own padding, so the colour has fully arrived before any content starts. */
