@@ -78,3 +78,32 @@ The contact submit button is `btn btn--primary contact-form__submit`. The résum
 - `FadeIn` / `HoverTilt` wrappers add a `div` around each project card in the grid (inside the
   `li`), around the hero content (`FadeIn` receives `className="hero__inner"`), around
   `.about-block` (`FadeIn` receives `className="about-block"`) and each detail gallery figure.
+
+## Section theming (added by UI/UX, round 2)
+
+Pages are built from full-bleed themed bands. The colour tokens are re-scoped per band, so every
+component inside re-themes with no extra classes. Palettes live in `styles/tokens.css`; behaviour in
+`components/motion/SectionTheme.tsx` and `section-theme-driver.ts`.
+
+| Hook                                                                   | Where / meaning                                                                                                                                                                                                                                                                                         |
+| ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `data-section-theme="void\|violet\|midnight"`                          | On a band's root element. `void` = page canvas (near-black), `violet` = deep violet with inverted (light) accents, `midnight` = subtle navy. Set by `<Section theme="…">` (`components/layout/Section.tsx`) or `<SectionTheme>`; the hero and the two project-detail bands use `SectionTheme` directly. |
+| `html[data-header-theme]`                                              | Set at runtime to the theme of the band under the sticky header; the header re-themes through the same tokens. Absent without JS (header stays `void`).                                                                                                                                                 |
+| `<Section theme aria-labelledby aria-label>`                           | New optional props on `Section`; `aria-labelledby` points at the band's heading.                                                                                                                                                                                                                        |
+| `<SectionHeading titleId>`                                             | New optional prop: id for the `h2` (so a band can be `aria-labelledby` it).                                                                                                                                                                                                                             |
+| `skills-showcase`                                                      | Home "Tools I reach for" band (`SkillsShowcase`, id `skills`, theme violet), built from `siteContent.about.skills`.                                                                                                                                                                                     |
+| `skills-showcase__rows`                                                | Wrapper of the two marquee rows.                                                                                                                                                                                                                                                                        |
+| `marquee` (+ `marquee--reverse`) · `marquee__inner` · `marquee__track` | CSS-only tech marquee. `marquee__inner` is the animated flex row; it holds 4 identical `ul.marquee__track` lists, only the first is exposed to assistive tech (the others are `aria-hidden`). Under reduced motion the row is static, wrapped and shows one list.                                       |
+| `about-skills` · `about-highlights`                                    | The violet skills band and the void "At a glance" band on `/about`.                                                                                                                                                                                                                                     |
+| `projects-intro` · `projects-list`                                     | The void header band and the violet grid band on `/projects`.                                                                                                                                                                                                                                           |
+| `contact-intro` · `contact-panel`                                      | The void header band and the violet form band on `/contact`.                                                                                                                                                                                                                                            |
+| `project-detail__top` · `project-detail__content`                      | The two bands inside `article.project-detail`: header/meta/links (void) and body/gallery (violet). Both are `div.layout-section` (not landmarks). `.project-detail` no longer sits inside an outer `Section`.                                                                                           |
+
+Other notes:
+
+- `home-about` (void) now also renders the highlights, styled as a stats strip; `home-cta` is a
+  `midnight` band. Home order: hero (void), featured (violet), about (void), skills (violet), CTA
+  (midnight).
+- `AboutBlock` omits `.about-block__bio` when `bio` is empty, and the skill group titles
+  (`about-block__skill-title`) are now `h3` (they sit under a band `h2`). `/about` renders three
+  `AboutBlock`s (bio + avatar, skills, highlights), one per band.
