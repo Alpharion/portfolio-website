@@ -107,6 +107,10 @@
     background: rgb(from var(--color-bg) r g b / 0.72);
     -webkit-backdrop-filter: blur(16px) saturate(140%);
     backdrop-filter: blur(16px) saturate(140%);
+    /* adopts the theme of the section beneath it (html[data-header-theme], see tokens.css) */
+    transition:
+      background-color var(--duration-slow) var(--ease-out),
+      border-color var(--duration-slow) var(--ease-out);
   }
 
   .site-header__inner {
@@ -974,7 +978,7 @@
    * Project detail
    * ====================================================================== */
 
-  .project-detail > .layout-container {
+  .project-detail .layout-container {
     display: flex;
     flex-direction: column;
     gap: 2.5rem;
@@ -1282,22 +1286,8 @@
   }
 
   .home-cta {
-    isolation: isolate;
     overflow: clip;
     text-align: center;
-  }
-
-  .home-cta::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    background: radial-gradient(
-      50rem 20rem at 50% 100%,
-      rgb(from var(--color-accent-strong) r g b / 0.22),
-      transparent 70%
-    );
-    pointer-events: none;
   }
 
   .home-cta .section-heading {
@@ -1442,6 +1432,239 @@
   @media (max-width: 30rem) {
     .contact-form__submit {
       align-self: stretch;
+    }
+  }
+
+  /* ========================================================================
+   * Section theming (scroll-driven, see tokens.css for the palettes)
+   *
+   * A themed section paints its own fill: transparent at the very top and bottom, fully
+   * opaque after --section-blend (= its padding), so as it scrolls into view the page colour
+   * blends smoothly from the neighbouring theme. Text never sits inside the blend zone, so the
+   * token flip at the section boundary is invisible. Pure CSS: works without JS.
+   * ====================================================================== */
+
+  [data-section-theme]:is(.layout-section, .hero) {
+    position: relative;
+    isolation: isolate;
+    color: var(--color-fg);
+  }
+
+  /* void = the page canvas itself (fixed grid + glow from globals.css): no fill of its own */
+  [data-section-theme="violet"].layout-section,
+  [data-section-theme="midnight"].layout-section {
+    background: linear-gradient(
+      to bottom,
+      transparent 0,
+      var(--color-bg) var(--section-blend),
+      var(--color-bg) calc(100% - var(--section-blend)),
+      transparent 100%
+    );
+  }
+
+  /* Decoration layer: glows + grid, faded out together with the fill at both edges */
+  [data-section-theme="violet"].layout-section::before,
+  [data-section-theme="midnight"].layout-section::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background-size:
+      auto,
+      auto,
+      var(--grid-size) var(--grid-size),
+      var(--grid-size) var(--grid-size);
+    background-position:
+      center,
+      center,
+      center top,
+      center top;
+    -webkit-mask-image: linear-gradient(
+      to bottom,
+      transparent 0,
+      black var(--section-blend),
+      black calc(100% - var(--section-blend)),
+      transparent 100%
+    );
+    mask-image: linear-gradient(
+      to bottom,
+      transparent 0,
+      black var(--section-blend),
+      black calc(100% - var(--section-blend)),
+      transparent 100%
+    );
+  }
+
+  [data-section-theme="violet"].layout-section::before {
+    background-image:
+      radial-gradient(
+        46rem 26rem at 10% 22%,
+        rgb(from var(--color-accent) r g b / 0.16),
+        transparent 70%
+      ),
+      radial-gradient(
+        42rem 30rem at 94% 80%,
+        rgb(from var(--color-accent-2) r g b / 0.1),
+        transparent 70%
+      ),
+      linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+  }
+
+  [data-section-theme="midnight"].layout-section::before {
+    background-image:
+      radial-gradient(
+        56rem 22rem at 50% 100%,
+        rgb(from var(--color-accent-strong) r g b / 0.34),
+        transparent 70%
+      ),
+      radial-gradient(
+        36rem 20rem at 85% 10%,
+        rgb(from var(--color-accent-2) r g b / 0.08),
+        transparent 70%
+      ),
+      linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+  }
+
+  /* header-less intro bands hand off directly to the next band */
+  .contact-intro .page__header,
+  .projects-intro .page__header {
+    margin-bottom: 0;
+  }
+
+  /* Detail page: the two bands share the flex-column rhythm of the old single container */
+  .project-detail__top .layout-container,
+  .project-detail__content .layout-container {
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+  }
+
+  /* ========================================================================
+   * Home: stats strip (about highlights) and tech marquee
+   * ====================================================================== */
+
+  .home-about .about-block__highlights {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0;
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: rgb(from var(--color-surface) r g b / 0.6);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+  }
+
+  .home-about .about-block__highlight {
+    align-items: center;
+    padding: 1.75rem 1rem;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    text-align: center;
+  }
+
+  .home-about .about-block__highlight + .about-block__highlight {
+    border-left: 1px solid var(--color-border);
+  }
+
+  .home-about .about-block__highlight-value {
+    font-size: clamp(1.75rem, 4vw, 2.75rem);
+  }
+
+  @media (max-width: 40rem) {
+    .home-about .about-block__highlights {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .home-about .about-block__highlight:nth-child(odd) {
+      border-left: 0;
+    }
+
+    .home-about .about-block__highlight:nth-child(n + 3) {
+      border-top: 1px solid var(--color-border);
+    }
+  }
+
+  .skills-showcase__rows {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .marquee {
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
+    mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
+  }
+
+  .marquee__inner {
+    display: flex;
+    width: max-content;
+    animation: marquee-scroll var(--duration-marquee) linear infinite;
+  }
+
+  .marquee--reverse .marquee__inner {
+    animation-direction: reverse;
+  }
+
+  .marquee:hover .marquee__inner,
+  .marquee:focus-within .marquee__inner {
+    animation-play-state: paused;
+  }
+
+  .marquee__track {
+    display: flex;
+    flex: none;
+    gap: 0.75rem;
+    margin: 0;
+    padding: 0 0.75rem 0 0;
+    list-style: none;
+  }
+
+  .marquee .tech-tag {
+    padding: 0.5rem 1.125rem;
+    background: rgb(from var(--color-surface) r g b / 0.7);
+    font-size: 0.875rem;
+  }
+
+  @keyframes marquee-scroll {
+    /* one of the four identical tracks (MARQUEE_COPIES in SkillsShowcase.tsx) */
+    to {
+      transform: translateX(-25%);
+    }
+  }
+
+  /* Reduced motion: no scrolling; show each row once, wrapped and centred */
+  @media (prefers-reduced-motion: reduce) {
+    .marquee {
+      -webkit-mask-image: none;
+      mask-image: none;
+    }
+
+    .marquee__inner {
+      width: auto;
+      animation: none;
+      justify-content: center;
+    }
+
+    .marquee__track {
+      flex-wrap: wrap;
+      justify-content: center;
+      padding-inline: var(--space-gutter);
+    }
+
+    .marquee__track[aria-hidden="true"] {
+      display: none;
+    }
+  }
+
+  /* Exactly four cards: a 2 x 2 grid reads better than 3 + 1 orphan */
+  @media (min-width: 40rem) {
+    .project-grid:has(> :nth-child(4):last-child) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
 }
