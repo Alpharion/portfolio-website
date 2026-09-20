@@ -1,0 +1,67 @@
+/*
+ * Design tokens — the contract between every agent and the visual layer (plan §C.2).
+ * Components consume tokens (Tailwind utilities like bg-surface / text-fg-muted, or var(--…)).
+ * No component may hardcode a hex value or a raw ms duration.
+ * Owner after scaffold: UI/UX Agent. Token NAMES are frozen; values may be tuned freely.
+ *
+ * Direction: dark theme, cool blue-tinted neutrals, light-purple (lavender) accent —
+ * inspired by Better Stack's near-black canvas with violet glow.
+ */
+@theme {
+  /* Surfaces */
+  --color-bg: #08080f;
+  --color-surface: #0f0f1a;
+  --color-surface-raised: #161625;
+  --color-border: #26263d;
+  --color-border-strong: #3a3a5c;
+
+  /* Text */
+  --color-fg: #ededf7;
+  --color-fg-muted: #9b9bb8;
+  --color-fg-subtle: #6b6b8a;
+
+  /* Accent: cool light purple + a cool cyan secondary */
+  --color-accent: #b4a0ff;
+  --color-accent-strong: #8f75f5;
+  --color-accent-soft: #b4a0ff24;
+  --color-accent-2: #7cd4f4;
+
+  /* Feedback */
+  --color-success: #6ee7b7;
+  --color-danger: #fda4af;
+
+  /* Type scale */
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+  --text-display: clamp(2.5rem, 6vw, 4.5rem);
+  --text-h1: clamp(2rem, 4vw, 3rem);
+  --text-h2: clamp(1.5rem, 3vw, 2rem);
+  --text-body: 1rem;
+  --text-small: 0.875rem;
+
+  /* Radius */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1.25rem;
+
+  /* Layout */
+  --container-page: 72rem;
+}
+
+:root {
+  color-scheme: dark;
+
+  /* Spacing rhythm for layout primitives */
+  --space-section: clamp(4rem, 10vw, 8rem);
+  --space-gutter: clamp(1rem, 4vw, 2rem);
+
+  /* Motion */
+  --duration-fast: 150ms;
+  --duration-base: 300ms;
+  --duration-slow: 600ms;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+
+  /* Effects */
+  --glow-accent: 0 0 60px -10px var(--color-accent-soft);
+}
